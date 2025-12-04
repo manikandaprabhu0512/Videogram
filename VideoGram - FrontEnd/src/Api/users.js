@@ -1,0 +1,198 @@
+import API from "./api";
+
+export const fetchUserData = async () => {
+  try {
+    const res = await API.get(`/users/getCurrentUser`, {
+      withCredentials: true,
+    });
+
+    return res?.data?.data || null;
+  } catch (error) {
+    const message = error?.response?.data?.message;
+
+    if (error?.response?.status === 401 && message === "Token Expired") {
+      const refreshed = await generateNewTokens();
+
+      if (refreshed) {
+        return fetchUserData();
+      } else {
+        return null;
+      }
+    }
+    throw error;
+  }
+};
+
+export const generateNewTokens = async () => {
+  try {
+    const res = await API.post(
+      "/users/refreshToken",
+      {},
+      { withCredentials: true }
+    );
+    return true;
+  } catch (error) {
+    console.error(
+      "🚨 Failed to refresh tokens:",
+      error?.response?.data?.message
+    );
+    return false;
+  }
+};
+
+export const getUserWatchHistory = async () => {
+  try {
+    const res = await API.get("/users/watchHistory", {
+      withCredentials: true,
+    });
+
+    return res;
+  } catch (error) {
+    console.error("Error: ", error);
+  }
+};
+
+export const registerUser = async ({
+  username,
+  fullName,
+  email,
+  password,
+  avatarFile,
+  coverFile,
+  biography,
+}) => {
+  const formData = new FormData();
+  formData.append("username", username);
+  formData.append("fullName", fullName);
+  formData.append("email", email);
+  formData.append("biography", biography);
+  formData.append("password", password);
+  formData.append("avatar", avatarFile);
+  formData.append("coverImage", coverFile);
+
+  try {
+    const res = await API.post("/users/register", formData, {
+      withCredentials: true,
+      headers: { "Content-Type": "multipart / form-data" },
+    });
+
+    return res;
+  } catch (error) {
+    throw error || "Error Registering User";
+  }
+};
+
+export const logoutuser = async () => {
+  try {
+    const res = await API.post("/users/logout", {}, { withCredentials: true });
+    return res;
+  } catch (error) {
+    throw error || "Error Logging Out";
+  }
+};
+
+export const updateAccountDetails = async ({
+  fullName,
+  username,
+  email,
+  biography,
+}) => {
+  if (!(fullName || username || email || biography))
+    return alert("Required Credentials");
+
+  try {
+    const res = await API.patch(
+      "/users/updateAccountDetails",
+      { fullName, username, email, biography },
+      {
+        withCredentials: true,
+      }
+    );
+
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const changePassword = async ({ oldPassword, newPassword }) => {
+  try {
+    const res = await API.post(
+      "/users/changePassword",
+      { oldPassword, newPassword },
+      { withCredentials: true }
+    );
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateAvatar = async ({ avatarFile }) => {
+  const formdata = new FormData();
+  formdata.append("avatar", avatarFile);
+  try {
+    const res = await API.patch("/users/updateUserAvatar", formdata, {
+      withCredentials: true,
+      headers: { "Content-Type": "multipart / form-data" },
+    });
+
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateCoverImage = async ({ coverImage }) => {
+  const formData = new FormData();
+  formData.append("coverImage", coverImage);
+
+  try {
+    const res = await API.patch("/users/updateUserCoverImage", formData, {
+      withCredentials: true,
+      headers: { "Content-type": "multipart / form-data" },
+    });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const removeAvatar = async () => {
+  try {
+    const res = await API.post(
+      "/users/removeavatar",
+      {},
+      { withCredentials: true }
+    );
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const removeCoverImage = async () => {
+  try {
+    const res = await API.post(
+      "/users/removecoverimage",
+      {},
+      {
+        withCredentials: true,
+      }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUserChannelDetails = async (channelname) => {
+  try {
+    const res = await API.get(`/users/c/${channelname}`, {
+      withCredentials: true,
+    });
+
+    return res?.data?.data || null;
+  } catch (error) {
+    throw error;
+  }
+};
