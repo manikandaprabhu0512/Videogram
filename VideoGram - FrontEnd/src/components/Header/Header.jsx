@@ -1,23 +1,28 @@
 import Loader from "../Loader";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useCurrentUser } from "../hooks/useUser";
 import { toggleSideBar } from "../../features/sidebar";
 import { useState } from "react";
+import ErrorPage from "../Pages/Service_Unavailavle";
 
 function Header() {
   const dispatch = useDispatch();
   const [dropDown, setDropDown] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const { data: user, isLoading: userLoading, isError } = useCurrentUser();
+
+  const handleSearch = (e) => {
+    setSearchParams({ q: e.target.value });
+  };
 
   if (userLoading) return <Loader isLoading={true} />;
 
   if (isError) {
     return (
       <div>
-        <h2>Server Unavailable</h2>
-        <p>Please try again later.</p>
+        <ErrorPage />
       </div>
     );
   }
@@ -66,6 +71,8 @@ function Header() {
               className="py-1.5 w-full bg-transparent outline-none placeholder-gray-500"
               type="text"
               placeholder="Search"
+              onChange={handleSearch}
+              value={searchParams.get("q") || ""}
             />
             <svg
               width="16"

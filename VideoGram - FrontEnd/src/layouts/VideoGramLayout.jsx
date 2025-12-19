@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Outlet } from "react-router-dom";
-// import { Header, HomeSideBar } from "../components";
 import Header from "../components/Header/Header";
-import Sidebar from "../components/SideBar/Testing";
+import Sidebar from "../components/SideBar/HomeSideBar";
 import { useSelector } from "react-redux";
 import BannerPopup from "../components/Popup/BannerPopup";
 
@@ -17,7 +16,9 @@ function VideoGramLayout() {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <aside className={`sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto`}>
+        <aside
+          className={`sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto z-100`}
+        >
           <Sidebar />
         </aside>
 
